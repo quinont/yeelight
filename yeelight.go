@@ -141,13 +141,23 @@ func (y *Yeelight) GetProp(values ...interface{}) ([]interface{}, error) {
 	return r.Result, nil
 }
 
+func (y *Yeelight) SetBright(bright int) error {
+	_, err := y.executeCommand("set_bright", bright, "smooth", 800)
+	return err
+}
+
+func (y *Yeelight) ThrowAlarm() error {
+	_, err := y.executeCommand("start_cf", 4, 0, "300,2,5000,100,300,2,5000,1,300,2,5000,100,300,2,5000,1")
+	return err
+}
+
 //SetPower is used to switch on or off the smart LED (software managed on/off).
 func (y *Yeelight) SetPower(on bool) error {
 	var status string
 	if on {
-		status = "on"
-	} else {
 		status = "off"
+	} else {
+		status = "on"
 	}
 	_, err := y.executeCommand("set_power", status)
 	return err
@@ -183,6 +193,9 @@ func (y *Yeelight) execute(cmd *Command) (*CommandResult, error) {
 
 	//write request/command
 	b, _ := json.Marshal(cmd)
+
+	defer closeConnection(conn)
+
 	fmt.Fprint(conn, string(b)+crlf)
 
 	//wait and read for response
