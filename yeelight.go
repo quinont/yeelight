@@ -155,9 +155,9 @@ func (y *Yeelight) ThrowAlarm() error {
 func (y *Yeelight) SetPower(on bool) error {
 	var status string
 	if on {
-		status = "off"
-	} else {
 		status = "on"
+	} else {
+		status = "off"
 	}
 	_, err := y.executeCommand("set_power", status)
 	return err
